@@ -1,0 +1,66 @@
+<!--
+*  @Author :Xu Tianyuan
+*  @Modifier :
+*  @Software: PyCharm
+*  Document purpose: 页面公有的建造一个模板页面
+* -->
+<!DOCTYPE html >
+<html xmlns="http://www.w3.org/1999/xhtml">
+{% load staticfiles %}
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=emulateIE11"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>{% block title %}合肥工业大学 搜索引擎{% endblock %}</title>
+    <link href="{% static 'css/style.css' %}" rel="stylesheet" type="text/css"/>
+    <link href="{% static 'css/result.css' %}" rel="stylesheet" type="text/css"/>
+    {% block custom_css %}{% endblock %}
+</head>
+<body>
+<div id="txt-header">
+    <div id="hd" class="txt-inner">
+        <a href="/">
+            <div class="logo"></div>
+        </a>
+        <div class="inputArea">
+            <input type="text" class="searchInput" value="{{ keyWords }}"/>
+            {% block searchFunction %}
+
+            {% endblock %}
+            <ul class="dataList" style="z-index: 3">
+            </ul>
+        </div>
+    </div>
+</div>
+<div id="txt-tabs-wrap">
+    <ul id="txt-g-hd-tabs">
+        {% block chooseType %}
+
+        {% endblock %}
+    </ul>
+</div>
+{% block bodyConent %}
+
+{% endblock %}
+
+<div id="foot">合肥工业大学</div>
+
+</body>
+<script type="text/javascript" src="{% static 'js/jquery.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/global.js' %}"></script>
+<script type="text/javascript">
+
+    setHeight();
+
+    $(window).resize(function () {
+        setHeight();
+    });
+
+    function setHeight() {
+        if ($('#container').outerHeight() < $(window).height()) {
+            $('#container').height($(window).height() - 33);
+        }
+    }
+
+</script>
+{% block custom_js %}{% endblock %}
+</html>

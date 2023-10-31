@@ -1,0 +1,113 @@
+﻿<!--
+*  @Author :Template
+*  @Modifier :Xu Tianyuan
+*  @Software: PyCharm
+*  Document purpose: 搜索引擎主页
+* -->
+<!DOCTYPE html >
+<html xmlns="http://www.w3.org/1999/xhtml">
+{% load staticfiles %}
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=emulateIE11"/>
+    <title>合肥工业大学 搜索引擎</title>
+    <link href="{% static 'css/style.css' %}" rel="stylesheet" type="text/css"/>
+    <link href="{% static 'css/index.css' %}" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="container">
+    <div id="bd">
+        <div id="main">
+            <h1 class="title">
+                <div class="logo large"></div>
+            </h1>
+            <div class="inputArea">
+                <div class="boderInfo">
+                    <s id="camera" title="按图片搜索"></s>
+                    <input type="text" id="input_text" placeholder="进行文本搜索" class="searchInput"/>
+                    <input type="button" class="searchButton" onclick="AddSearch()"/>
+
+                </div>
+                <ul class="dataList">
+                </ul>
+                <div id="stBox" class="st_box" style="display: none">
+                    <div id="uploadTop" class="high-quality-load" style="display:none">
+                        <span><i></i><i></i></span>
+                        正在上传文件...
+                    </div>
+                    <div id="pic_hide">
+                        <div id="stBoxChild" class="stBox-drop color_less">
+                            <span class="stBox-drop-tip">拖拽图片到这里</span>
+                            <i id="icon" class="stBox-icon stBox-drop-icon"></i>
+                        </div>
+
+                        <div class="upload-wrap">
+                            <input type="file" name="file" id="uploadBt" class="upload-pic" value="上传图片"
+                                   accept="image/*"
+                                   onchange="UploadFileChange(this,PAGE_TYPE.INDEX)">
+                            <i class="upload-icon"></i>
+                            <span>本地上传图片</span>
+                        </div>
+                        {% csrf_token %}
+                        <a title="取消图片搜索" class="stBox-close" href="javascript:void(0);"></a>
+                    </div>
+                </div>
+            </div>
+            <div class="historyArea">
+                <p class="history">
+                    <label>热门搜索：</label>
+                </p>
+                {% for searchWords,urlSearch in topnSearch %}
+                    <div>
+                        <a href="/search?q={{ urlSearch }}" title="{{ searchWords }}">{{ searchWords }}</a>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="foot">
+        <div class="wrap">
+            <div class="copyright">合肥工业大学</div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="{% static 'js/jquery.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/common.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/global.js' %}"></script>
+<script charset="UTF-8" type="text/javascript" src="{% static 'js/searchPicture.js' %}"></script>
+<script type="text/javascript">
+
+    var searchUrl = "{% url 'search' %}", searchPhotoUrl = "{% url 'searchPicture' 'URL'  %}";
+    $(function () {
+        try {
+            hideElement($('.dataList'), $('.searchInput'));
+            (new DragStrategy()).init(PAGE_TYPE.INDEX);
+            $('.searchInput').bind(' input propertychange ', function () {
+                if (!picSearchVar.stBox.is(':visible')) {
+                    var searchText = $(this).val();
+                    SuggestWindow(searchText)
+                }
+            });
+        } catch (e) {
+        }
+    });
+
+    function AddSearch() {
+        var isPhoto = picSearchVar.stBox.is(':visible') ? true : false;
+        if (isPhoto) {
+            if (Check()) {
+                UploadBackgroud(PAGE_TYPE.INDEX);
+                var imgSrc = picSearchVar.inputText.val();
+                location.href = searchPhotoUrl + "?query=" + encodeURIComponent(imgSrc);
+            }
+
+        } else {
+            var val = $(".searchInput").val();
+            if (val.length >= 1) {
+                window.location.href = searchUrl + '?q=' + encodeURIComponent(val);
+            }
+        }
+    }
+</script>
+</html>

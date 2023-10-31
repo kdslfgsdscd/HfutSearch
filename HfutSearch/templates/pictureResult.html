@@ -1,0 +1,196 @@
+<!--
+*  @Author :Xu Tianyuan
+*  @Modifier :
+*  @Software: PyCharm
+*  Document purpose: 图片检索结果页面
+* -->
+<!DOCTYPE html >
+<html xmlns="http://www.w3.org/1999/xhtml">
+{% load staticfiles %}
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=emulateIE11"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>合肥工业大学 搜索引擎</title>
+    <link href="{% static 'css/style.css' %}" rel="stylesheet" type="text/css"/>
+    <link href="{% static 'css/searchPicture.css' %}" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="header">
+    <div id="hd" class="inner">
+
+        <a href="/">
+            <div class="logo"></div>
+        </a>
+        <div class="inputArea">
+            <input type="text" id="input_text" class="searchInput" placeholder="拖拽图片到此或在此处粘贴图片网址"/>
+            <input type="button" class="searchButton" onclick="AddSearch()"/>
+            <div class="result-upload-wrap">
+
+                <input type="file" id="uploadBt" name='imgFile' class="result-upload-pic" value="上传图片"
+                       accept="image/*" onchange="UploadFileChange(this,PAGE_TYPE.RESULT)">
+                {% csrf_token %}
+                <span>本地上传</span>
+            </div>
+
+        </div>
+        <div class="st_box" id="stBox" style="display: none">
+            <div class="high-quality-load" style="display:none">
+                <span><i></i><i></i></span>
+                正在上传文件...
+            </div>
+            <div id="pic_hide">
+                <div id="stBoxChild" class="stBox-drop color_less">
+                    <span class="stBox-drop-tip">拖拽图片到这里</span>
+                    <i class="stBox-icon stBox-drop-icon"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div id="tabs-wrap"></div>
+<div id="bd">
+    <div class="user_upload" id="userUpload">
+        <div class="img_box"><img src="{% static '' %}{{ userUpload.imgUrl }}" alt="您上传的图"
+                                  style="width:180px;height:120px; background-color: #eeeeee"></div>
+        <dl class="img_info">
+            <dt class="img_title" id="bestGuess">最佳猜测：
+                <a target="_blank" href="http://{{ userUpload.infoGuess }}">
+                    {% if userUpload.title %}{{ userUpload.title }}{% else %}无标题{% endif %}</a>
+            </dt>
+            <dd>图片尺寸：{{ userUpload.width }}&nbsp;<span class="multiply">X</span>&nbsp;{{ userUpload.height }}</dd>
+        </dl>
+    </div>
+    <div class="like-img-shopping">
+        <div class="like-nav">
+            <span id="similar">相似图片</span>
+        </div>
+        <div class="like-content">
+            <div class="like-wrap" id="likeImg" style="display: block;">
+                <div class="like-img-list">
+                    <div class="wfx_group">
+
+                        {% if userUpload.total %}<span style="font-size: medium">第1页</span>{% endif %}
+                        <ul class="wfx_row" style="width:1200px;">
+                            {% for imgPath, imgUrl, imgSize,imgTitle in filesInfo %}
+                                <li style="width:230px;height:150px; background-color: #eeeeee">
+                                    <a target="_blank" href="http://{{ imgUrl }}" class="img_box" data-copr="1"
+                                       data-pos="0">
+                                        <img class="main_img" src="{% static '' %}{{ imgPath }}"
+                                             style="width:100%;height:100%">
+                                    </a>
+                                    <div class="img_info">
+                                        <div class="info_bg">
+                                            <div class="info_desc">{{ imgTitle }}</div>
+                                            <div class="info_size"><span>{{ imgSize }}</span>
+                                                <a href="javascript:;" data-href="{{ imgPath }}" class="info_st"></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            {% endfor %}
+
+                        </ul>
+                    </div>
+                </div>
+
+                <div id="footLoad" class="high-quality-load" style="display:none;margin-top: 1px;left: 40%;">
+                    <span><i></i><i></i></span>
+                    加载中...
+                </div>
+                <div id="footLoadOver" class="high-quality-load" style="display:none;margin-top: 1px;left: 40%;">
+                    已经加载完毕
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="gotop" id="gotop" title="返回顶部" style="left: 1300px; position: fixed; bottom: 60px; display: none;">
+        <a href="javascript:;" class="btn_gotop"></a></div>
+</div>
+
+<div id="foot">合肥工业大学</div>
+</body>
+<script type="text/javascript" src="{% static 'js/jquery.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/searchPicture.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/global.js' %}"></script>
+<script type="text/javascript">
+
+    var searchPhotoUrl = "{% url 'searchPicture' 'URL'  %}", isAchieve = true, isInit = true,
+        initStart ={{ userUpload.start }}, initEnd ={{ userUpload.end }}, total = {{ userUpload.total }};
+
+    function AddSearch() {
+        Check() && (location.href = searchPhotoUrl + "?query="
+            + encodeURIComponent(picSearchVar.inputText.val()));
+    }
+
+    $("a.btn_gotop").bind("click", function (e) {
+        $(window).scrollTop(0);
+        $('#gotop').fadeOut(300);
+    });
+
+    try {
+        (new DragStrategy()).init(PAGE_TYPE.RESULT);
+
+        $('#likeImg .wfx_group').on('mouseover', 'li', function (e) {
+            $(this).children('.img_info').fadeIn(0);
+        }).on('mouseout', 'li', function (e) {
+            $(this).children('.img_info').fadeOut(0);
+        });
+
+        $('#likeImg .wfx_group').on('click', '.img_info a', function (e) {
+            location.href = "/searchPicture/" + UPLOAD_TYPE.LINK + "/?" + "query=" + encodeURIComponent($(this).attr('data-href'));
+        })
+
+        $(window).scroll(function () {
+            (isInit && $(window).scrollTop(0)) || ((($(window).scrollTop() + $(window).height() >= $(document).height() - 50)
+                && (initEnd + 1 < total) && isAchieve) ? ($('#footLoad').show(), isAchieve = false,
+                ajaxLoad(initEnd + 1, initEnd + initEnd - initStart + 1)) : (!(initEnd + 1 < total) && $('#footLoadOver').show()));
+            $(window).scrollTop() > 0.5 * $(window).height() ? $('#gotop').fadeIn(300) : $('#gotop').fadeOut(300);
+            isInit = false;
+        });
+
+    } catch (e) {
+    }
+
+    function addElemHtm(pageIndex, imgList) {
+        var htmlCode = '<span style="font-size: medium">第' + pageIndex + '页</span>' +
+            '<ul class="wfx_row" style="width:1200px;">'
+        for (itemTotal in imgList) {
+            htmlCode += '<li style="width:230px;height:150px; background-color: #eeeeee">\n' +
+                '<a target="_blank" href="http://' + imgList[itemTotal][1] + '"class="img_box" data-copr="1" data-pos="0">' +
+                '<img class="main_img" src="{% static '' %}' + imgList[itemTotal][0] + '"style="width:100%;height:100%">' +
+                '</a><div class="img_info">\n' +
+                '<div class="info_bg">\n' +
+                '<div class="info_desc">' + imgList[itemTotal][3] + '</div>\n' +
+                '<div class="info_size"><span>' + imgList[itemTotal][2] + '</span>\n' +
+                '<a href="javascript:;"data-href="' + imgList[itemTotal][0] + '"class="info_st"></a>\n' +
+                ' </div></div></div></li>'
+        }
+        return htmlCode += '</ul>'
+    };
+
+    function ajaxLoad(start, end) {
+        urlParams = "?imgToken=" + "{{ userUpload.imgName }}" +
+            "&" + 'start=' + start + '&end=' + end;
+        $.ajax({
+            url: "/ajaxQuest/" + urlParams,
+            processData: false,
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (jsonInfo) {
+                if (jsonInfo.imgList.length) {
+                    var htmlCode = addElemHtm(jsonInfo.pageIndex, jsonInfo.imgList)
+                    $(".wfx_group").append(htmlCode)
+                    initStart = start;
+                    initEnd = end;
+                } else {
+                    total = start;
+                    $('#footLoadOver').show()
+                }
+                $('#footLoad').hide()
+                isAchieve = true;
+            }
+        });
+    };
+</script>
+</html>

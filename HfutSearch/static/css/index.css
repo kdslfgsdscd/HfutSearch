@@ -1,0 +1,281 @@
+/*
+*  @Author :Template
+*  @Modifier :Xu Tianyuan
+*  @Software: PyCharm
+*  Document purpose: 主页css样式
+* */
+@charset "utf-8";
+html {
+    *overflow: auto;
+}
+
+#main {
+    width: 730px;
+    margin: 75px auto 0;
+}
+
+#main h1.title {
+    width: 600px;
+}
+
+#bd {
+    margin-bottom: 20px;
+}
+
+.logo.large {
+    margin: 0px auto 10px auto;
+    width: 342px;
+    height: 144px;
+    background: url(../img/logo.png) no-repeat center center;
+}
+
+/*nav样式*/
+.nav {
+    margin-bottom: 10px;
+}
+
+.searchList {
+    float: left;
+    padding-left: 5px;
+}
+
+.searchList .searchItem {
+    float: left;
+    margin-right: 15px;
+    font-size: 14px;
+    padding: 0 0 2px 2px;
+    cursor: pointer;
+    height: 18px;
+}
+
+.searchList .searchItem.current {
+    color: #0080cc;
+    border-bottom: 2px solid #9cc813;
+    font-weight: bold;
+}
+
+/*input搜索区域*/
+.inputArea {
+    position: relative;
+    margin-bottom: 65px;
+}
+
+.inputArea .searchInput {
+    border: 0px;
+    outline: none;
+    height: 40px;
+    *height: 39px;
+    *line-height: 40px;
+    width: 505px;
+    font-size: 14px;
+    padding-left: 15px;
+}
+
+.inputArea .boderInfo {
+    width: 653px;
+    border-top: 1px solid;
+    border: 1px solid #bfbfbf
+}
+
+.inputArea .searchButton {
+    position: absolute;
+    left: 550px;
+    *left: 552px;
+    *top: 1px;
+    width: 106px;
+    height: 42px;
+    *height: 41px;
+    background: url(../img/seachbtn.png) no-repeat;
+    border: none;
+    cursor: pointer;
+}
+
+/*高级搜索*/
+.inputArea .advanced {
+    position: absolute;
+    font-size: 14px;
+    left: 674px;
+    top: 12px;
+    text-decoration: underline;
+}
+
+/*联想下拉区域*/
+.inputArea .dataList {
+    display: none;
+    position: absolute;
+    left: 0;
+    top: 42px;
+    *top: 43px;
+    width: 550px;
+    padding: 5px 0;
+    background: #fff;
+    border: 1px solid #bfbfbf;
+    border-top: none;
+}
+
+.inputArea .dataList li {
+    padding: 2px 15px;
+    font-size: 14px;
+}
+
+.inputArea .dataList li:hover {
+    background: #f0f0f0;
+    color: #0080cc;
+    font-weight: bold;
+}
+
+/*搜索历史区域*/
+.historyArea {
+    margin-top: 0px;
+    margin-left: 20px;
+    width: 485px;
+}
+
+.historyArea .history {
+    margin-bottom: 5px;
+}
+
+.historyArea div {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    float: left;
+    width: 200px;
+    margin-left: 30px;
+}
+
+.historyArea .history label {
+    font-weight: bold;
+}
+
+.historyArea .history a {
+    margin-right: 12px;
+}
+
+/*版权信息*/
+.foot {
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
+}
+
+.foot .wrap {
+    margin: 0 auto;
+}
+
+.foot .copyright {
+    position: relative;
+    top: -35px;
+    color: #ababab;
+    text-align: center;
+}
+
+/* index_photo*/
+#camera {
+    display: inline-block;
+    background: url("../img/camera_new.png");
+    cursor: pointer;
+    height: 19px;
+    left: 525px;
+    margin-top: 12px;
+    position: absolute;
+    width: 18px;
+    z-index: 2
+}
+
+#camera:hover {
+    background-position: 0 19px;
+    margin-top: 10px;
+}
+
+.st_box {
+    border: 1px solid #e5e5e5;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, .2);
+    height: 170px;
+    padding: 20px 30px;
+    position: absolute;
+    width: 596px;
+    z-index: 2;
+    background-color: white;
+}
+
+.st_box .stBox-drop {
+    text-align: center;
+    height: 75px;
+    padding: 20px 30px 10px;
+    margin-bottom: 16px;
+}
+
+.stBox-drop-tip {
+    display: block;
+    font-size: 20px;
+    color: #999
+}
+
+.stBox-drop-icon {
+    display: block;
+    background: url("../img/addphoto.png");
+    width: 28px;
+    height: 28px;
+    position: relative;
+    margin: 0 auto;
+    background-position: -70px -2px
+}
+
+.upload-pic {
+    position: absolute;
+    font-size: 0;
+    width: 100%;
+    height: 100%;
+    outline: 0;
+    opacity: 0;
+    margin-left: -18px;
+    z-index: 2;
+    cursor: pointer
+}
+
+.upload-icon {
+    background: url("../img/addphoto.png");
+    display: inline-block;
+    position: relative;
+    top: 2px;
+    width: 18px;
+    height: 18px;
+    margin-right: 8px;
+    background-position: -144px 0
+}
+
+.upload-wrap {
+    position: relative;
+    width: 158px;
+    height: 43px;
+    font-size: 16px;
+    border: 1px solid #cacbcc;
+    line-height: 43px;
+    margin: 0 auto;
+    color: #333;
+    text-align: center
+}
+
+.stBox-close {
+    display: inline-block;
+    background: url("../img/addphoto.png");
+    position: absolute;
+    right: 18px;
+    bottom: 13px;
+    z-index: 2;
+    background-position: -20px 0;
+    width: 18px;
+    height: 18px
+}
+
+.high-quality-load {
+    display: block;
+    position: relative;
+    top: 50%;
+    color: #333;
+    margin-top: -20px;
+    text-align: center;
+    padding: 8px 0 32px;
+    font-size: 16px;
+}

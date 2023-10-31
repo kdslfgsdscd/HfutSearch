@@ -1,0 +1,155 @@
+<!--
+*  @Author :Xu Tianyuan
+*  @Modifier :
+*  @Software: PyCharm
+*  Document purpose:显示文本检索图片页面
+* -->
+{% extends 'searchBase.html' %}
+{% load staticfiles %}
+{% block custom_css %}
+    <link href="{% static 'css/searchPicture.css' %}" rel="stylesheet" type="text/css"/>
+{% endblock %}
+{% block searchFunction %}
+    <input type="button" class="searchButton" onclick="txtPicSearch()"/>
+{% endblock %}
+{% block chooseType %}
+    <li><a onclick="txtSearch()">网页</a></li>
+    <li class="txt-g-hd-cur"><a>图片</a></li>
+{% endblock %}
+{% block bodyConent %}
+    <div id="txt-bd">
+        <div class="like-img-shopping">
+            <div class="like-content">
+                <div class="like-wrap" id="likeImg" style="display: block;">
+                    <div class="like-img-list">
+                        <div class="wfx_group">
+                            <ul class="wfx_row" style="width:1200px;">
+                                {% for imgPath, imgUrl, imgSize,imgTitle in filesInfo %}
+                                    <li style="width:230px;height:150px; background-color: #eeeeee">
+                                        <a target="_blank" href="http://{{ imgUrl }}" class="img_box" data-copr="1"
+                                           data-pos="0">
+                                            <img class="main_img" src="{% static '' %}{{ imgPath }}"
+                                                 style="width:100%;height:100%">
+                                        </a>
+                                        <div class="img_info">
+                                            <div class="info_bg">
+                                                <div class="info_desc">{{ imgTitle }}</div>
+                                                <div class="info_size"><span>{{ imgSize }}</span>
+                                                    <a href="javascript:;" data-href="{{ imgPath }}"
+                                                       class="info_st"></a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div id="footLoad" class="high-quality-load" style="display:none;margin-top: 1px;left: 40%;">
+                        <span><i></i><i></i></span>
+                        加载中...
+                    </div>
+                    <div id="footLoadOver" class="high-quality-load" style="display:none;margin-top: 1px;left: 40%;">
+                        已经加载完毕
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="gotop" id="gotop" title="返回顶部" style="left: 1300px; position: fixed; bottom: 60px; display: none;">
+            <a href="javascript:;" class="btn_gotop"></a></div>
+    </div>
+{% endblock %}
+{% block custom_js %}
+    <script type="text/javascript" src="{% static 'js/searchPicture.js' %}"></script>
+    <script type="text/javascript">
+        var searchUrl = "{% url 'search' %}", keyWords = "{{ keyWords }}",
+            searchPhotoUrl = "{% url 'searchPicture' 'URL'  %}"
+            , isAchieve = true, isInit = true, txtPicSear = "{% url 'txtPicSearch' %}", initStart ={{ pageInfo.start }},
+            initEnd ={{ pageInfo.end }}, total = {{ pageInfo.total }};
+
+        $("a.btn_gotop").bind("click", function (e) {
+            $(window).scrollTop(0);
+            $('#gotop').fadeOut(300);
+        });
+
+        try {
+            (new DragStrategy()).init(PAGE_TYPE.RESULT);
+
+            $('#likeImg .wfx_group').on('mouseover', 'li', function (e) {
+                $(this).children('.img_info').fadeIn(0);
+            }).on('mouseout', 'li', function (e) {
+                $(this).children('.img_info').fadeOut(0);
+            });
+
+            $('#likeImg .wfx_group').on('click', '.img_info a', function (e) {
+                location.href = "/searchPicture/" + UPLOAD_TYPE.LINK + "/?" + "query=" + encodeURIComponent($(this).attr('data-href'));
+            })
+
+            $(window).scroll(function () {
+                (isInit && $(window).scrollTop(0)) || ((($(window).scrollTop() + $(window).height() >= $(document).height() - 50)
+                    && (initEnd + 1 < total) && isAchieve) ? ($('#footLoad').show(), isAchieve = false,
+                    ajaxLoad(initEnd + 1, initEnd + initEnd - initStart + 1)) : (!(initEnd + 1 < total) && $('#footLoadOver').show()));
+                $(window).scrollTop() > 0.5 * $(window).height() ? $('#gotop').fadeIn(300) : $('#gotop').fadeOut(300);
+                isInit = false;
+            });
+
+        } catch (e) {
+        }
+
+        function addElemHtm(pageIndex, imgList) {
+            var htmlCode = '<ul class="wfx_row" style="width:1200px;">'
+            for (itemTotal in imgList) {
+                htmlCode += '<li style="width:230px;height:150px; background-color: #eeeeee">\n' +
+                    '<a target="_blank" href="http://' + imgList[itemTotal][1] + '"class="img_box" data-copr="1" data-pos="0">' +
+                    '<img class="main_img" src="{% static '' %}' + imgList[itemTotal][0] + '"style="width:100%;height:100%">' +
+                    '</a><div class="img_info">\n' +
+                    '<div class="info_bg">\n' +
+                    '<div class="info_desc">' + imgList[itemTotal][3] + '</div>\n' +
+                    '<div class="info_size"><span>' + imgList[itemTotal][2] + '</span>\n' +
+                    '<a href="javascript:;"data-href="' + imgList[itemTotal][0] + '"class="info_st"></a>\n' +
+                    ' </div></div></div></li>'
+            }
+            return htmlCode += '</ul>'
+        };
+
+        function ajaxLoad(start, end) {
+            urlParams = "?imgToken=" + "{{ pageInfo.keysToken }}" +
+                "&" + 'start=' + start + '&end=' + end;
+            $.ajax({
+                url: "/ajaxQuest/" + urlParams,
+                processData: false,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (jsonInfo) {
+                    if (jsonInfo.imgList.length) {
+                        var htmlCode = addElemHtm(jsonInfo.pageIndex, jsonInfo.imgList)
+                        $(".wfx_group").append(htmlCode)
+                        initStart = start;
+                        initEnd = end;
+                    } else {
+                        total = start;
+                        $('#footLoadOver').show()
+                    }
+                    $('#footLoad').hide()
+                    isAchieve = true
+                }
+            });
+        };
+
+        function txtSearch() {
+            var val = $(".searchInput").val();
+            if (val.length >= 1) {
+                window.location.href = searchUrl + '?q=' + encodeURIComponent(val)
+            }
+
+        }
+
+        function txtPicSearch() {
+            var val = $(".searchInput").val();
+            if (val.length >= 1) {
+                window.location.href = txtPicSear + '?q=' + encodeURIComponent(val)
+            }
+        }
+    </script>
+{% endblock %}
